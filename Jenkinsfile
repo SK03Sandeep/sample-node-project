@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "sample-node-app"
-        IMAGE_TAG = "v1.%BUILD_NUMBER%"
+        IMAGE_TAG = "v1.${BUILD_NUMBER}"
         CONTAINER_NAME = "sample-node-container"
         PORT = "3000"
     }
@@ -19,6 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat 'npm install'
+                bat 'npm audit fix'
             }
         }
 
