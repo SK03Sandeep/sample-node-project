@@ -16,6 +16,7 @@ pipeline {
 
         stage('Clone Code') {
             steps {
+                git branch: 'master',
                     url: 'https://github.com/SK03Sandeep/sample-node-project.git'
             }
         }
