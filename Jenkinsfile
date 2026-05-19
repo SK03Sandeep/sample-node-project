@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     environment {
         IMAGE_NAME = "sample-node-app"
         IMAGE_TAG = "v1.${BUILD_NUMBER}"
@@ -10,12 +9,7 @@ pipeline {
 
     stages {
 
-        stage('Cleanup Workspace') {
-            steps {
-                wsclean()
-                echo 'Workspace cleaned up successfully.'
-            }
-        }
+      
 
         stage('Clone Code') {
             steps {
@@ -52,6 +46,8 @@ pipeline {
             archiveArtifacts artifacts: '**/package*.json, Dockerfile, docker-compose.yml, readme.md',
                              allowEmptyArchive: true
             echo 'Build successful! Artifacts archived.'
+            cleanWs()
+            echo 'Workspace cleaned up after archiving.'
         }
     }
 }
