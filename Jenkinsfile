@@ -10,6 +10,13 @@ pipeline {
 
     stages {
 
+        stage('Cleanup Workspace') {
+            steps {
+                wsclean()
+                echo 'Workspace cleaned up successfully.'
+            }
+        }
+
         stage('Clone Code') {
             steps {
                 git 'https://github.com/SK03Sandeep/sample-node-project.git'
@@ -37,6 +44,14 @@ pipeline {
                 docker run -d -p %PORT%:3000 --name %CONTAINER_NAME% %IMAGE_NAME%:%IMAGE_TAG%
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            archiveArtifacts artifacts: '**/package*.json, Dockerfile, docker-compose.yml, readme.md',
+                             allowEmptyArchive: true
+            echo 'Build successful! Artifacts archived.'
         }
     }
 }
