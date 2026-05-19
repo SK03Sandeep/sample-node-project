@@ -1,5 +1,10 @@
 pipeline {
     agent any
+
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         IMAGE_NAME = "sample-node-app"
         IMAGE_TAG = "v1.${BUILD_NUMBER}"
@@ -9,11 +14,10 @@ pipeline {
 
     stages {
 
-      
-
         stage('Clone Code') {
             steps {
-                git 'https://github.com/SK03Sandeep/sample-node-project.git'
+                git branch: 'main',
+                    url: 'https://github.com/SK03Sandeep/sample-node-project.git'
             }
         }
 
@@ -24,7 +28,6 @@ pipeline {
             }
         }
 
-       
         stage('Build Docker Image') {
             steps {
                 bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
@@ -34,7 +37,7 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 bat '''
-                docker rm -f %CONTAINER_NAME% || exit 0
+                docker rm -f %CONTAINER_NAME%
                 docker run -d -p %PORT%:3000 --name %CONTAINER_NAME% %IMAGE_NAME%:%IMAGE_TAG%
                 '''
             }
@@ -43,11 +46,10 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts artifacts: '**/package*.json, Dockerfile, docker-compose.yml, readme.md',
+            archiveArtifacts artifacts: '**/package*.json,Dockerfile',
                              allowEmptyArchive: true
-            echo 'Build successful! Artifacts archived.'
+
             cleanWs()
-            echo 'Workspace cleaned up after archiving.'
         }
     }
 }
